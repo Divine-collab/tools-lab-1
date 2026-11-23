@@ -23,4 +23,5 @@ jobs:
             - name: Goodbye world 
               run: echo "Goodbye World"
               shell: bash
-        
+              
+        needs: [hello]

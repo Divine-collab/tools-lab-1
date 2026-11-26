@@ -1,0 +1,39 @@
+name: create a comment on new issues
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+    comment-with-action:
+        runs-on: ubuntu-lastest
+        steps:
+          - name: "dump github context"
+            run: echo "${{ toJson(github.event) }}"
+            shell: bash
+          - name: create comment
+            uses: peter-evans/create-or-update-comment@v5
+            with:
+              issue-number: ${{ github.event.issue.number }}
+              body: |
+                This is a multi-line test comment
+                - With GitHub **markdown** :sparkles:
+                -created by [create-or-update-comment][1]
+                [1]:github.com/peter-evans/create-or-update-comment
+
+    comment-with-API:
+      runs-on: ubuntu-lastest
+      steps:
+        - name: "create a comment with API"
+          run: | 
+           gh API \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
+            -f "body= Me too"
+
+          env:
+            OWNER: ${{ github.event.repository.owner.login }}
+            REPO: ${{ github.event.repository.name }} 
+            ISSUE_NUMBER: ${{ github.event.issue.number }}  
